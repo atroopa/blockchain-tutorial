@@ -52,6 +52,7 @@ func main() {
 	fmt.Printf("%v ETH type(%T) \n", value, value)
 }
 
+// Must Import math/big
 func ConverToETH(input *big.Float) *big.Float {
 	value := new(big.Float).Quo(input, big.NewFloat(math.Pow10(18)))
 	return value
