@@ -48,11 +48,11 @@ func main() {
 	fBalance.SetString(balance.String())
 	fmt.Printf("big number : %v   type(%T) \n", fBalance, fBalance)
 	// 10*10*10*10*10*...18
-	value := new(big.Float).Quo(fBalance, big.NewFloat(math.Pow10(18)))
+	value := ConverToETH(fBalance)
 	fmt.Printf("%v ETH type(%T) \n", value, value)
 }
 
-// func ConverToETH(input float64){
-// 	value := new(big.Float).Quo(input, big.NewFloat(math.Pow10(18)))
-// 	return value
-// }
+func ConverToETH(input *big.Float) *big.Float {
+	value := new(big.Float).Quo(input, big.NewFloat(math.Pow10(18)))
+	return value
+}
