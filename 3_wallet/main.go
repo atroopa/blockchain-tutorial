@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	fmt.Println("============================================")
 	pvk, err := crypto.GenerateKey()
 
 	if err != nil {
