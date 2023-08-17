@@ -3,10 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/big"
 	"context"
-	"github.com/ethereum/go-ethereum/common"
 	//"github.com/ethereum/go-ethereum/accounts/keystore"
 	//"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
@@ -15,23 +16,6 @@ var  (
 )
 
 func main() {
-	// fmt.Println("je ajab")
-	// ks := keystore.NewKeyStore("./wallet", keystore.StandardScryptN , keystore.StandardScryptP)
-
-	// _, err := ks.NewAccount("password")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// 	_, err = ks.NewAccount("password")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-
-	//"34f4bb72ec332be6b8e5e8b09c1b4b94406f8042"
-	//"79e4120aff999ec2682ea209f516288ed09a9e76"
-
 	client , err := ethclient.Dial(url)
 
 	if err != nil {
@@ -53,7 +37,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Balance 1:", b1)
-	fmt.Println("Balance 1:", b2)
+	fmt.Println("Balance 1:", ConvertToETH(b1), " ETH")
+	fmt.Println("Balance 2:", ConvertToETH(b2), " ETH")
+}
 
+// Must Import math/big
+func ConvertToETH(input *big.Int) *big.Float {
+	value := new(big.Float).Quo(new(big.Float).SetInt(input), big.NewFloat(1e18))
+	return value
 }
