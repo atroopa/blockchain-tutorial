@@ -34,9 +34,11 @@ func main() {
 	}
 
 	pData := crypto.FromECDSA(key.PrivateKey)
-	fmt.Println(hexutil.Encode(pData))
+	fmt.Println("private key : \n 		",hexutil.Encode(pData))
 
 	pData = crypto.FromECDSAPub(&key.PrivateKey.PublicKey)
-	fmt.Println(hexutil.Encode(pData))
+	fmt.Println("public key : \n 		",hexutil.Encode(pData))
+
+	fmt.Println("address: \n 		", crypto.PubkeyToAddress(key.PrivateKey.PublicKey).Hex())
 
 }
