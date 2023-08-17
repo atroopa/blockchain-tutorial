@@ -21,6 +21,9 @@ func main() {
 	fmt.Println("============================================")
 	fmt.Println("Generate Public key: ")
 	puData := crypto.FromECDSAPub(&pvk.PublicKey)
-
 	fmt.Println(hexutil.Encode(puData))
+
+	fmt.Println("============================================")
+	fmt.Println("Generate Ethereum Wallet Address: ")
+	fmt.Println(crypto.PubkeyToAddress(pvk.PublicKey).Hex())
 }
