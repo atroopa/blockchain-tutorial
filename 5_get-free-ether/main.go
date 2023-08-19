@@ -1,22 +1,25 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"github.com/ethereum/go-ethereum/accounts/keystore"
+	"github.com/ethereum/go-ethereum/core/types"
+	"io/ioutil"
 	"log"
 	"math/big"
-	"context"
 	//"github.com/ethereum/go-ethereum/accounts/keystore"
 	//"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
-var  (
+var (
 	url = "https://goerli.infura.io/v3/f67125134e064cf094e2495c49323c68"
 )
 
 func main() {
-	client , err := ethclient.Dial(url)
+	client, err := ethclient.Dial(url)
 
 	if err != nil {
 		log.Fatal(err)
@@ -39,6 +42,44 @@ func main() {
 
 	fmt.Println("Balance 1:", ConvertToETH(b1), " ETH")
 	fmt.Println("Balance 2:", ConvertToETH(b2), " ETH")
+
+	nonce, err := client.PendingNonceAt(context.Background(), a1)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var amount *big.Int = big.NewInt(110000000000000)
+	gasPrice, err := client.SuggestGasPrice(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	//types.NewTx
+	tx := types.NewTransaction(nonce, a2, amount, 21000, gasPrice, nil)
+
+	chainId, err := client.NetworkID(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//keystoreFilePath := "./wallet/UTC--2023-08-17T15-56-10.974441400Z--34f4bb72ec332be6b8e5e8b09c1b4b94406f8042"
+	b, err := ioutil.ReadFile("./wallet/UTC--2023-08-17T15-56-10.974441400Z--34f4bb72ec332be6b8e5e8b09c1b4b94406f8042")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	key, err := keystore.DecryptKey(b, "password")
+
+	tx, err = types.SignTx(tx, types.NewEIP155Signer(chainId), key.PrivateKey)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = client.SendTransaction(context.Background(), tx)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("tx send : %s", tx.Hash().Hex())
 }
 
 // Must Import math/big

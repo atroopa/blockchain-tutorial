@@ -62,7 +62,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	b, err := ioutil.ReadFile("wallet/UTC--2023-08-17T15-56-10.974441400Z--34f4bb72ec332be6b8e5e8b09c1b4b94406f8042")
+	keystoreFilePath := "./wallet/UTC--2023-08-17T15-57-16.336405000Z--6a8ae59389f338d7b87c3f79058405307f7d2589"
+	b, err := ioutil.ReadFile(keystoreFilePath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -79,7 +80,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("tx send : %s", tx.Hash().Hex())
+	fmt.Printf("tx send : %s \n \n", tx.Hash().Hex())
 }
 
 // Must Import math/big
