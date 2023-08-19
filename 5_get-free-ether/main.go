@@ -3,19 +3,16 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/ethereum/go-ethereum/accounts/keystore"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"io/ioutil"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"log"
 	"math/big"
-	//"github.com/ethereum/go-ethereum/accounts/keystore"
-	//"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 var (
-	url = "https://goerli.infura.io/v3/f67125134e064cf094e2495c49323c68"
+	url = "http://127.0.0.1:7545" // آدرس و پورت Ganache
 )
 
 func main() {
@@ -27,8 +24,8 @@ func main() {
 
 	defer client.Close()
 
-	a1 := common.HexToAddress("34f4bb72ec332be6b8e5e8b09c1b4b94406f8042")
-	a2 := common.HexToAddress("79e4120aff999ec2682ea209f516288ed09a9e76")
+	a1 := common.HexToAddress("0x6137BA6b5003961d98d866EBAaCdC54E549E7601") // آدرس اکانت اول در Ganache
+	a2 := common.HexToAddress("0x1aa2F228C93Af553dC81a8D068FAe1eD2F04eA95") // آدرس اکانت دوم در Ganache
 
 	b1, err := client.BalanceAt(context.Background(), a1, nil)
 	if err != nil {
@@ -62,14 +59,16 @@ func main() {
 	}
 
 	//keystoreFilePath := "./wallet/UTC--2023-08-17T15-56-10.974441400Z--34f4bb72ec332be6b8e5e8b09c1b4b94406f8042"
-	b, err := ioutil.ReadFile("./wallet/UTC--2023-08-17T15-56-10.974441400Z--34f4bb72ec332be6b8e5e8b09c1b4b94406f8042")
-	if err != nil {
-		log.Fatal(err)
-	}
+	//b, err := ioutil.ReadFile("./wallet/UTC--2023-08-17T15-56-10.974441400Z--34f4bb72ec332be6b8e5e8b09c1b4b94406f8042")
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 
-	key, err := keystore.DecryptKey(b, "password")
+	priv := "0xe5e893e2cafb0ce25d57e83501dea1f017f9571f4c37b8337db4c2662775d742"
 
-	tx, err = types.SignTx(tx, types.NewEIP155Signer(chainId), key.PrivateKey)
+	key, err := crypto.HexToECDSA(priv)
+
+	tx, err = types.SignTx(tx, types.NewEIP155Signer(chainId), key)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -82,7 +81,7 @@ func main() {
 	fmt.Printf("tx send : %s", tx.Hash().Hex())
 }
 
-// Must Import math/big
+// ConvertToETH Must Import math/big
 func ConvertToETH(input *big.Int) *big.Float {
 	value := new(big.Float).Quo(new(big.Float).SetInt(input), big.NewFloat(1e18))
 	return value

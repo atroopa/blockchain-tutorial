@@ -3,28 +3,39 @@ package main
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"math/big"
+
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"io/ioutil"
-	"log"
-	"math/big"
 )
 
 var (
-	url = "https://goerli.infura.io/v3/f67125134e064cf094e2495c49323c68"
+	url  = "https://goerli.infura.io/v3/f67125134e064cf094e2495c49323c68"
+	murl = "https://mainnet.infura.io/v3/0c7b3f204f37416388610fb274b0452c"
 )
 
 func main() {
-	client, err := ethclient.Dial(url)
+	// ks := keystore.NewKeyStore("./wallet", keystore.StandardScryptN, keystore.StandardScryptP)
+	// _, err := ks.NewAccount("password")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// _, err = ks.NewAccount("password")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// "1f7ecea2fa83cc4a7de969f11d16a40edf9023d7"
+	// "1e41ca1ccfc06597525c966a986b35a09e22358d"
 
+	client, err := ethclient.Dial(url)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	defer client.Close()
-
 	a1 := common.HexToAddress("34f4bb72ec332be6b8e5e8b09c1b4b94406f8042")
 	a2 := common.HexToAddress("79e4120aff999ec2682ea209f516288ed09a9e76")
 
@@ -38,37 +49,35 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Balance 1:", ConvertToETH(b1), " ETH")
-	fmt.Println(b1)
-	fmt.Println("Balance 2:", ConvertToETH(b2), " ETH")
-
+	fmt.Println("Balance 1:", b1)
+	fmt.Println("Balance 2:", b2)
 	nonce, err := client.PendingNonceAt(context.Background(), a1)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	var amount *big.Int = big.NewInt(110000000000000)
+	// 1 ether = 1000000000000000000 wei
+	amount := big.NewInt(100000000000000000)
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
-	//types.NewTx
 	tx := types.NewTransaction(nonce, a2, amount, 21000, gasPrice, nil)
-
-	chainId, err := client.NetworkID(context.Background())
+	chainID, err := client.NetworkID(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	keystoreFilePath := "./wallet/UTC--2023-08-17T15-57-16.336405000Z--6a8ae59389f338d7b87c3f79058405307f7d2589"
-	b, err := ioutil.ReadFile(keystoreFilePath)
+	b, err := ioutil.ReadFile("wallet/UTC--2023-08-17T15-56-10.974441400Z--34f4bb72ec332be6b8e5e8b09c1b4b94406f8042")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	key, err := keystore.DecryptKey(b, "password")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	tx, err = types.SignTx(tx, types.NewEIP155Signer(chainId), key.PrivateKey)
+	tx, err = types.SignTx(tx, types.NewEIP155Signer(chainID), key.PrivateKey)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -77,12 +86,5 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Printf("tx send : %s \n \n", tx.Hash().Hex())
-}
-
-// Must Import math/big
-func ConvertToETH(input *big.Int) *big.Float {
-	value := new(big.Float).Quo(new(big.Float).SetInt(input), big.NewFloat(1e18))
-	return value
+	fmt.Printf("tx sent: %s", tx.Hash().Hex())
 }
