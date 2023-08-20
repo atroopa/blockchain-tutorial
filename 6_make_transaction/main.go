@@ -47,7 +47,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	amount := big.NewInt(1500)
+	amount := big.NewInt(1500000)
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		log.Fatal(err)
