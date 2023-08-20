@@ -47,13 +47,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var amount *big.Int = big.NewInt(110000000000000)
+	amount := big.NewInt(1500)
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
 	//types.NewTx
-	tx := types.NewTransaction(nonce, a2, amount, 21000, gasPrice, nil)
+	tx := types.NewTransaction(nonce, a2, amount, 91000, gasPrice, nil)
 
 	chainId, err := client.NetworkID(context.Background())
 	if err != nil {
